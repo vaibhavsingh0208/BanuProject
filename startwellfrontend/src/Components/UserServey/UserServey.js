@@ -8,9 +8,26 @@ export default class UserServey extends Component {
     super();
     this.state = {
       bucketInfo: [],
-      addBucketClicked: false
+      addBucketClicked: false,
+      selectedRowKeys: [],
+      loading: false
     };
   }
+
+  start = () => {
+    this.setState({ loading: true });
+    // ajax request after empty completing
+    setTimeout(() => {
+      this.setState({
+        selectedRowKeys: []
+      });
+    }, 1000);
+  };
+
+  onSelectChange = selectedRowKeys => {
+    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    this.setState({ selectedRowKeys });
+  };
 
   addBucket = () => {
     this.setState({
@@ -28,7 +45,7 @@ export default class UserServey extends Component {
         if (response.status === 200) {
           console.log(JSON.stringify(response.data));
           this.setState({
-            bucketInfo: [response.data]
+            bucketInfo: response.data
           });
           console.log('Survey Bucket', response);
         } else {
@@ -64,6 +81,12 @@ export default class UserServey extends Component {
       }
     ];
     const addBucketClicked = this.state.addBucketClicked;
+    const { selectedRowKeys } = this.state;
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: this.onSelectChange
+    };
+    const hasSelected = selectedRowKeys.length > 0;
 
     return (
       <div style={{ display: 'flex', flexFlow: 'column' }}>
@@ -84,18 +107,26 @@ export default class UserServey extends Component {
             </Button>
           </div>
         </div>
-        <div id='body'>
+        <div id='body' style={{ height: '700px' }}>
           {buckeyDataInfo && bucketInfohasData ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                height: '400px',
+                marginTop: '20px'
+              }}
+            >
               <Table
-                style={{ width: '1000px', marginTop: '50px' }}
+                style={{ width: '70%', height: '100%' }}
                 dataSource={buckeyDataInfo}
                 columns={bucketColumnInfo}
+                rowSelection={rowSelection}
               />
             </div>
           ) : addBucketClicked ? (
             <div style={{ width: '75%', marginTop: '150px' }}>
-              <BucketType />
+              <BucketType submitSuccess={false} />
             </div>
           ) : null}
         </div>

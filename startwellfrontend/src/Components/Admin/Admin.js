@@ -59,7 +59,7 @@ export default class Admin extends Component {
               />
             </Sider>
           </div>
-          <div style={{ backgroundColor: 'white', height: '700px', width: '85%', margin: '60px' }}>
+          <div style={{ backgroundColor: 'white', height: '750px', width: '85%', margin: '60px' }}>
             {this.state.adminTabSelected === 'none' ? (
               <div>
                 <div>

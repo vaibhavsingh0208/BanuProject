@@ -10,6 +10,12 @@ export default class BucketType extends Component {
     };
   }
 
+  componentDidMount = () => {
+    this.setState({
+      submitSuccess: false
+    });
+  };
+
   render() {
     const layout = {
       labelCol: {
@@ -28,15 +34,15 @@ export default class BucketType extends Component {
 
     const onFinish = values => {
       axios
-        .post('http://localhost:9000/user/login', {
+        .post('http://localhost:9000/addBucket', {
           BucketType: values.BucketType,
           BucketDesc: values.BucketDesc
         })
         .then(response => {
-          if (response.data.code === 200) {
+          if (response.status === 200) {
             console.log(JSON.stringify(response.data));
             this.setState({
-              submitSuccess: true
+              submitSuccess: response.data.status
             });
             this.render();
           } else if (response.data.code === 204) {
@@ -47,10 +53,11 @@ export default class BucketType extends Component {
           console.log('error occured', error);
         });
     };
+    const submitSuccess = this.state.submitSuccess;
 
     return (
       <div>
-        {this.state.submitSuccess ? (
+        {submitSuccess ? (
           <div>Bucket Added</div>
         ) : (
           <Form {...layout} name='basic' onFinish={onFinish}>
