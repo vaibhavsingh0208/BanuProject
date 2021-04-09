@@ -86,7 +86,6 @@ export default class UserServey extends Component {
       selectedRowKeys,
       onChange: this.onSelectChange
     };
-    const hasSelected = selectedRowKeys.length > 0;
 
     return (
       <div style={{ display: 'flex', flexFlow: 'column' }}>
@@ -118,10 +117,9 @@ export default class UserServey extends Component {
               }}
             >
               <Table
-                style={{ width: '70%', height: '100%' }}
+                style={{ width: '70%', height: '100%', cursor: 'pointer' }}
                 dataSource={buckeyDataInfo}
                 columns={bucketColumnInfo}
-                rowSelection={rowSelection}
               />
             </div>
           ) : addBucketClicked ? (
