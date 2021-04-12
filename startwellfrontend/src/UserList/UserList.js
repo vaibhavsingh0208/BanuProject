@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { Button, Table } from 'antd';
+import { Empty, Input, Table } from 'antd';
 import axios from 'axios';
+
+const { Search } = Input;
 
 export default class UserList extends Component {
   constructor() {
     super();
     this.state = {
       userInfo: [],
-      callMade: false
+      callMade: false,
+      searchData: ''
     };
   }
 
@@ -48,13 +51,25 @@ export default class UserList extends Component {
       });
   };
 
+  onSearch = value => {
+    this.setState({
+      searchData: value
+    });
+  };
+
   render() {
     const userDataInfo = this.state.userInfo;
     let userFilterData = userDataInfo;
-    const { userType } = this.props;
+    let { userType } = this.props;
+    const searchData = this.state.searchData;
+    if (searchData.length > 2) {
+      userType = 'all';
+      userFilterData = userDataInfo.filter(data => data.First_Name === searchData || data.Last_Name === searchData);
+    }
     if (userType !== 'all' && userDataInfo.length) {
       userFilterData = userDataInfo.filter(data => data.UserType === userType);
     }
+
     const userInfohasData = userFilterData.length;
 
     const userColumnInfo = [
@@ -78,6 +93,15 @@ export default class UserList extends Component {
 
     return (
       <div style={{ display: 'flex', flexFlow: 'column' }}>
+        <div style={{ marginLeft: '40px', marginTop: '20px', marginRight: '1150px' }}>
+          <Search
+            placeholder='input search text'
+            allowClear
+            enterButton='Search'
+            size='large'
+            onSearch={this.onSearch}
+          />
+        </div>
         <div id='body'>
           {userDataInfo && userInfohasData ? (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -87,7 +111,11 @@ export default class UserList extends Component {
                 columns={userColumnInfo}
               />
             </div>
-          ) : null}
+          ) : (
+            <div>
+              <Empty />
+            </div>
+          )}
         </div>
       </div>
     );
