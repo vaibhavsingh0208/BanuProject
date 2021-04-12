@@ -5,6 +5,7 @@ import UserServey from '../UserServey/UserServey';
 import { UserOutlined } from '@ant-design/icons';
 import UserList from '../UserList/UserList';
 import { Link } from 'react-router-dom';
+import ContactUsList from '../ContactUs/ContactUsList';
 
 const { SubMenu } = Menu;
 
@@ -28,6 +29,14 @@ export default class Admin extends Component {
     this.setState({
       adminTabSelected: value,
       userTypeValue: type
+    });
+  };
+
+  setNaviagtionClickForSurvey = (value, type) => {
+    localStorage.setItem('adminTabSelected', value);
+    this.setState({
+      adminTabSelected: value,
+      bucketTypeSelected: type
     });
   };
 
@@ -103,8 +112,14 @@ export default class Admin extends Component {
                     </span>
                   }
                 >
-                  <Menu.Item key='1'>Fetch Survey Bucket</Menu.Item>
-                  <Menu.Item key='2'>Add new Survey Bucket</Menu.Item>
+                  <Menu.Item
+                    key='1'
+                    onClick={() => {
+                      this.setNaviagtionClickForSurvey('Survey Data', 'surveyList');
+                    }}
+                  >
+                    Fetch Survey Info
+                  </Menu.Item>
                 </SubMenu>
               </Menu>
               <Menu mode='inline' style={{ height: '100%', borderRight: 0 }}>
@@ -135,11 +150,13 @@ export default class Admin extends Component {
                     </span>
                   }
                 >
-                  <Menu.Item key='1'>
-                    <Link to='ChangePersonalDetails'>Fetch User Details</Link>
-                  </Menu.Item>
-                  <Menu.Item key='2'>
-                    <Link to='Survey'>Change User Status</Link>
+                  <Menu.Item
+                    key='1'
+                    onClick={() => {
+                      this.setNaviagtionClick('New Request');
+                    }}
+                  >
+                    Get Customer Data
                   </Menu.Item>
                 </SubMenu>
               </Menu>
@@ -163,7 +180,9 @@ export default class Admin extends Component {
             ) : this.state.adminTabSelected === 'Page Content' ? (
               <div id='user'>Page Content</div>
             ) : this.state.adminTabSelected === 'New Request' ? (
-              <div id='user'>New Request</div>
+              <div id='user'>
+                <ContactUsList />
+              </div>
             ) : null}
           </div>
         </div>
