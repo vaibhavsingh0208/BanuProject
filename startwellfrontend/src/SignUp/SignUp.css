@@ -1,0 +1,38 @@
+@import '~antd/dist/antd.css';
+.login-header {
+  text-align: center;
+  margin-top: -2rem;
+  /* font-family: 'fangsong'; */
+}
+
+.SignUp-form {
+  top: 66px;
+  max-width: 600px;
+  height: 700px ;
+  font-family: 'fangsong';
+  background-color: #fff;
+
+  padding: 50px 70px;
+  right: 0px;
+  position: absolute;
+  overflow: hidden;
+  border-radius: 0px;
+
+}
+
+.SignUp-form-button {
+  width: 100%;
+}
+
+a {
+  color: #27a8a8;
+}
+a:hover {
+  color: #27a8a8;
+}
+
+.App-header {
+  background-color: rgb(190 190 190 / 20%) !important;
+
+  /* background-image: url(../../Assets/background.jpg) !important; */
+}
