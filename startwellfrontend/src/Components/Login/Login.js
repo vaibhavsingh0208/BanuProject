@@ -50,7 +50,19 @@ class Login extends Component {
   }
   handleSuccessfulAuth(data) {
     //this.props.handleLogin(data);
-    window.location = '/LoginSuccess';
+    console.log("data in auth",data)
+    console.log("checking for usertype",data.UserType)
+    if(data.UserType === "Customer")
+    {
+      window.location = `/UserDashboard?token=${data.token}`}
+    if(data.UserType ==="Admin")
+    {
+      window.location = `/Admin?token=${data.token}`
+    }
+    if(data.UserType === "Provider")
+    {
+      window.location = `/Provider?token=${data.token}`
+    }
   }
   validate() {
     let emailError = '';

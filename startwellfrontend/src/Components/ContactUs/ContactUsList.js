@@ -29,7 +29,7 @@ export default class ContactUsList extends Component {
       addBucketClicked: false
     });
     axios
-      .get('http://localhost:3200/DisplayContactUs')
+      .get('http://localhost:9000/DisplayContactUs')
       .then(response => {
         if (response.status === 200) {
           console.log(JSON.stringify(response.data));

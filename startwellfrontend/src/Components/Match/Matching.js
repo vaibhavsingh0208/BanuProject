@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import { Form, Input, Button, Checkbox, Select, Layout, Menu, Row, Col, Card } from 'antd';
+import { Form, Input, Button, Checkbox, Select, Layout, Menu, Row, Col, Card, Table } from 'antd';
 import logo from '../../Assets/logo.PNG';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
@@ -13,8 +13,8 @@ class Matching extends Component {
     super(props);
     this.userdata = {};
     this.state = {
-      email: '',
-      UserType: ''
+      UserID: '',
+      userInfo: []
     };
   }
 
@@ -23,7 +23,28 @@ class Matching extends Component {
       addBucketClicked: false
     });
     axios
-      .get('http://localhost:3200/user_response')
+      .get(`http://localhost:9000/user_response?UserID=${4}`)
+      .then(response => {
+        if (response.status === 200) {
+          console.log(JSON.stringify(response.data));
+          this.setState({
+            userInfo: response.data
+          });
+          console.log('fetching data', response);
+
+          console.log(response[1]);
+          console.log(response[2]);
+        } else {
+          let Error = 'Error while fetching  details';
+          this.setState({ Error });
+          console.log('Error while fetching details', response);
+        }
+      })
+      .catch(error => {
+        console.log('error occured', error);
+      });
+    axios
+      .get('http://localhost:9000/user_response')
       .then(response => {
         if (response.status === 200) {
           console.log(JSON.stringify(response.data));
@@ -43,6 +64,20 @@ class Matching extends Component {
   };
 
   render() {
+    const userDataInfo = this.state.userInfo;
+    const userInfohasData = userDataInfo.length;
+    const userColumnInfo = [
+      {
+        title: 'EmailID',
+        dataIndex: 'EmailID'
+      },
+
+      {
+        title: 'Score',
+        dataIndex: 'Score'
+      }
+    ];
+
     return (
       <div>
         <Header style={{ backgroundColor: 'gray', height: '100%' }}>
@@ -71,8 +106,39 @@ class Matching extends Component {
             </Menu.Item>
           </Menu>
         </Header>
-
-        <Button block>Match</Button>
+        <Button block onClick={this.displayMatchData}>
+          Match
+        </Button>
+        <div>
+          <div className='site-card-wrapper'>
+            <Row gutter={16}>
+              <Col span={8}>
+                <Card title='Provider 1' bordered={false}>
+                  You are matched with Email: {userDataInfo[0]}
+                  <br /> with score
+                  <br /> {userDataInfo[1]}
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card title='Provider 2' bordered={false}>
+                  You are matched with Email: {userDataInfo[2]}
+                  <br /> with score
+                  <br />
+                  {userDataInfo[3]}
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card title='Provider 3' bordered={false}>
+                  {userDataInfo[4]}
+                  <br /> with score
+                  <br />
+                  {userDataInfo[5]}
+                </Card>
+              </Col>
+            </Row>
+          </div>
+          ,
+        </div>
       </div>
     );
   }

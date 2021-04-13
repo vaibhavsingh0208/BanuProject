@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button, Input, Form } from 'antd';
 import axios from 'axios';
 
-export default class BucketType extends Component {
+export default class EditUser extends Component {
   constructor() {
     super();
     this.state = {
@@ -34,40 +34,40 @@ export default class BucketType extends Component {
 
     const onFinish = values => {
       axios
-        .post('http://localhost:3200/addBucket', {
-          BucketType: values.BucketType,
-          BucketDesc: values.BucketDesc
+        .put('http://localhost:9000/updateUserStatus', {
+          UserID: values.UserID,
+          Current_Status: values.Current_Status
         })
         .then(response => {
           if (response.status === 200) {
             console.log(JSON.stringify(response.data));
             this.setState({
-              submitSuccess: response.data.status
+              submitSuccess: response.data.message
             });
             this.render();
           } else if (response.data.code === 204) {
-            console.log('Bucket Submission failed with response: ', response);
+            console.log('User Status Submission failed with response: ', response);
           }
         })
         .catch(error => {
           console.log('error occured', error);
         });
     };
-    const submitSuccess = this.state.submitSuccess;
+    const submitSuccess = this.state.submitSuccess === 'Status Changed';
 
     return (
       <div>
         {submitSuccess ? (
-          <div>Bucket Added</div>
+          <div>User Status Updated</div>
         ) : (
           <Form {...layout} name='basic' onFinish={onFinish}>
             <Form.Item
-              label='Bucket Type'
-              name='BucketType'
+              label='User Id'
+              name='UserID'
               rules={[
                 {
                   required: true,
-                  message: 'Bucket Type is mandetory Filed'
+                  message: 'User Id is mandetory Filed'
                 }
               ]}
             >
@@ -75,12 +75,12 @@ export default class BucketType extends Component {
             </Form.Item>
 
             <Form.Item
-              label='Bucket Description'
-              name='BucketDesc'
+              label='Current Status'
+              name='Current_Status'
               rules={[
                 {
                   required: true,
-                  message: 'Bucket Type is mandetory Filed'
+                  message: 'Staus is mandetory field'
                 }
               ]}
             >
