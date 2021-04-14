@@ -28,7 +28,7 @@ class SignUp extends Component {
       passwordError: '',
       userType: 'Customer',
       nameError: '',
-      Current_Status: 'Active',
+      Current_Status: '',
       LicenceID: ''
     };
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -94,7 +94,7 @@ class SignUp extends Component {
     return true;
   }
   handleSuccessfulRegister(data) {
-    window.location = '/RegisterSuccess';
+    window.location = '/Login';
   }
 
   //   handleChange(event){
@@ -119,6 +119,8 @@ class SignUp extends Component {
     this.setState({ userType: event });
     if (this.state.userType === 'Provider') {
       this.setState({ Current_Status: 'Inactive' });
+    } else {
+      this.setState({ Current_Status: 'Active' });
     }
   }
   handleChangeEmail(event) {
@@ -136,10 +138,18 @@ class SignUp extends Component {
     e.preventDefault();
     this.state.passwordError = '';
     this.state.emailError = '';
+    console.log(this.state.userType);
     if (this.state.userType === 'Provider') {
-      let Current_Status = 'Inactive';
-      this.setState({ Current_Status });
+      console.log('in if');
+      this.state.Current_Status = 'Inactive';
+      this.setState({ Current_Status: 'Inactive' });
+      console.log('inside if', this.state.Current_Status);
+    } else {
+      console.log('in else');
+      this.state.Current_Status = 'Active';
+      this.setState({ Current_Status: 'Active' });
     }
+    console.log('after if', this.state.Current_Status);
     const {
       firstname,
       lastname,
@@ -383,6 +393,7 @@ class SignUp extends Component {
                   />{' '}
                 </Form.Item>
               )}
+
               <Form.Item>
                 <Button
                   type='primary'

@@ -4,10 +4,8 @@ import { Button, Descriptions, Divider, Tag, Typography, Affix} from 'antd';
 import { UserOutlined, LogoutOutlined, PlusSquareOutlined, MonitorOutlined} from '@ant-design/icons';
 import { Layout, Menu, Breadcrumb, Avatar, Card, Col, Row, Image, Collapse, Badge, Rate} from 'antd';
 import { SmileOutlined } from '@ant-design/icons';
-import './UserDashboard.css';
+import './ProviderDashboard.css';
 import logo from '../../Assets/SmartLogo.png'
-import axios from 'axios';
-import { Redirect } from "react-router-dom";
 import profimg from '../../Assets/prof.png'
 import { Link } from 'react-router-dom';
 const { Header, Content, Footer, Sider } = Layout;
@@ -31,80 +29,89 @@ var providerlname = 'Hunt'
 var providerrating = 5;
 var Ratetext = 'Rate ' + providerfname + ' ' + providerlname + '?';
 var userimg = 'https://i.pinimg.com/474x/0e/94/ee/0e94ee478645638ce3c4fb911b2baa55.jpg';
-var provimg = 'https://cutewallpaper.org/21/deathwing/And-a-detail-wowtcg-warcraft-worldofwarcraft-.jpg'
+var provimg = 'https://cutewallpaper.org/21/deathwing/And-a-detail-wowtcg-warcraft-worldofwarcraft-.jpg';
+var linkedUsersNumber = 5;
 
 const { Panel } = Collapse;
-
-class UserDashboard extends React.Component
-{
-
-    constructor(props) {
-        super(props);
-        this.state = {
-          token:"",
-          fname: "",
-          lname: "",
-          DOB:"",
-          Sex: "",
-          Subscription: "",
-          changelink:"",
-          redirect:null,
-        };
-    }
-
-    componentDidMount(){
-        const queryParams = new URLSearchParams(window.location.search);
-        var usid = queryParams.get('token');
-        this.setState({token:usid});
-
-
-        axios.get("http://localhost:9000/profiledetails", {
-        headers:{
-            token: usid,
-        } 
-        }).then(
-            res =>{
-              const q = res.data;
-              var date = q.dob;
-              if(date==null)
-              {
-                date = "Update your details!"
-              }
-              var sx = q.sex;
-              if(sx==null)
-              {
-                sx = "Update your details!"
-              }
-              var x = JSON.parse(localStorage.getItem('user'))
-              localStorage.setItem('user', JSON.stringify(x));
-              console.log(res.data)
-              this.setState({fname: q.First_Name});
-              this.setState({lname: q.lastname});
-              this.setState({DOB: date});
-              this.setState({Sex: sx})
-              var chang = "/ChangePersonalDetails?token=" + String(usid);
-              this.setState({changelink: chang})
-            }
-        )
-    }
-
-    delAcc = (e) => {
-        var tokn = this.state.token;
-        axios.delete("http://localhost:9000/profiledelete", {
-        headers:{
-            token: tokn,
-        } 
-        }).then(res => {
-            this.setState({redirect:"/homepage"})
-        })
-    }
-    render()
+const LinkedUsers = [
     {
-        if (this.state.redirect) {
-            return <Redirect to={this.state.redirect} />
+        fname: 'McTominay',
+        lname: 'User1',
+        profpic: '',
+    },
+    {
+        fname: 'Fred',
+        lname: 'User2',
+        profpic: '',
+    },
+    {
+        fname: 'Martial',
+        lname: 'User3',
+        profpic: '',
+    },
+    {
+        fname: 'Marcus',
+        lname: 'User4',
+        profpic: '',
+    },
+    {
+        fname: 'Edinson',
+        lname: 'User5',
+        profpic: '',
+    },
+    {
+        fname: 'Bruno',
+        lname: 'User6',
+        profpic: '',
+    },
+    {
+        fname: 'Greenwood',
+        lname: 'User7',
+        profpic: '',
+    }
+]
+
+
+
+class ProviderDashboard extends React.Component
+{
+    userGen(linkedUsersNumber)
+    {
+        var i;
+        var s = [];
+        for(i=0;i<linkedUsersNumber;i++)
+        {
+            s.push(
+                <Panel header = {LinkedUsers[i].fname + " " + LinkedUsers[i].lname} key = {i}>
+                    <Row>
+                        <Col span={6}>
+                            <Image width={'90%'} height={'90%'} src={LinkedUsers[i].profpic} fallback="data:image/png;base64,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"/>
+                        </Col>
+                        <Col span={18}>
+                            <Descriptions width={'50%'} bordered layout='horizontal' column={1}>
+                                <Descriptions.Item label='First Name'>{LinkedUsers[i].fname}</Descriptions.Item>
+                                <Descriptions.Item label='Last Name'>{LinkedUsers[i].lname}</Descriptions.Item>
+                            </Descriptions>
+                            <br></br>
+                            <Button className='reviewButton'>Prompt Review</Button>
+                        </Col>
+                    </Row>
+                </Panel>
+            )
         }
         return(
-            <Layout style={{width:"100%", height:'100vh'}}>
+            <Collapse accordion>
+                {s}
+            </Collapse>
+        );
+    }
+
+
+    render()
+    {
+        return(
+            <Layout>
+            <Layout style={{width:"100%", height:'100%'}}>
                 <Row>
                     <Col span={24}>
                         <Affix offsetTop={0}>
@@ -137,10 +144,10 @@ class UserDashboard extends React.Component
                                     <Sider width='100%' style={{background:"#A9A9A9"}}>
                                         <Menu mode="inline" style={{height:"100%", borderRight:0}}>
                                             <SubMenu key="sub1" title={<span><UserOutlined/>Account Details</span>}>
-                                                <Menu.Item key="1"><Link to={this.state.changelink}>Change Personal Details</Link></Menu.Item>
-                                                <Menu.Item key="2"><Link to={'/Survey?surveyid=1&token=' + String(this.state.token)}>Change Preferences</Link></Menu.Item>
-                                                <Menu.Item key="3"><Link to='/Subscriptions'>Change Subscription</Link></Menu.Item>
-                                                <Menu.Item key="4" onClick={this.delAcc}>Delete Account</Menu.Item>
+                                                <Menu.Item key="1"><Link to='ChangePersonalDetails'>Change Personal Details</Link></Menu.Item>
+                                                <Menu.Item key="2"><Link to='Survey'>Change Preferences</Link></Menu.Item>
+                                                <Menu.Item key="3"><Link to='Subscription'>Change Subscription</Link></Menu.Item>
+                                                <Menu.Item key="4"><Link to='DeleteAccount'>Delete Account</Link></Menu.Item>
                                             </SubMenu>
                                             <SubMenu key="sub2" title={<span><PlusSquareOutlined/>Treatment Plan</span>}>
                                                 <Menu.Item key="5">Goal1</Menu.Item>
@@ -164,7 +171,7 @@ class UserDashboard extends React.Component
                                     <h3 className='welcometext'>&nbsp;&nbsp;&nbsp;Welcome, {first_name}!</h3>  
                                     <Layout style={{width:'80vw', height:'80vh', padding: '24px 24px 24px', background:'darkgray'}}>
                                         <Row style={{ background: 'white', padding: 24}}>
-                                            <Col span={24}>
+                                            <Col span={24}>    
                                                 <div className="site-card-wrapper">
                                                     <Row gutter = {16} height={'80%'}>
                                                         <Card hoverable style={{ width: '45%', height:'80%'}}>
@@ -173,62 +180,47 @@ class UserDashboard extends React.Component
                                                             <br></br>
                                                             <br></br>
                                                             <Descriptions width={'50%'} bordered size="middle" layout="horizontal" column={1}>
-                                                                <Descriptions.Item label="First_Name">{this.state.fname}</Descriptions.Item>
-                                                                <Descriptions.Item label="Last_Name">{this.state.lname}</Descriptions.Item>
-                                                                <Descriptions.Item label="DOB">{this.state.DOB}</Descriptions.Item>
-                                                                <Descriptions.Item label="Sex">{this.state.Sex}</Descriptions.Item>
+                                                                <Descriptions.Item label="First_Name">{first_name}</Descriptions.Item>
+                                                                <Descriptions.Item label="Last_Name">{last_name}</Descriptions.Item>
+                                                                <Descriptions.Item label="DOB">{dob}</Descriptions.Item>
+                                                                <Descriptions.Item label="Sex">{sex}</Descriptions.Item>
                                                                 <Descriptions.Item label="Subscription"><Badge status="processing"/><Tag color={subscriptionColor}>{subscription}</Tag></Descriptions.Item>
-    
+        
                                                             </Descriptions>
                                                         </Card>
                                                         <Col span = {12}>
+        
+                                                        <Row>
+                                                            <Card hoverable style={{ width: '100%', float:'right'}}>
+                                                                <text className="SurveysTitle">Linked Users</text>
+                                                                {this.userGen(linkedUsersNumber)}
+                                                            </Card>
+                                                        </Row>
+        
                                                         <Row>
                                                             <Card hoverable style={{ width: '100%', float:'right'}}>
                                                                 <text className="SurveysTitle">Surveys</text>
                                                                 <Collapse accordion>
                                                                     <Panel header="Explore Your Options" key="1">
                                                                     <p><text>{SurveyDesc}</text></p>
-                                                                    <Button href={'/Survey?surveyid=1&token=' + String(this.state.token)} type='link'>Take Survey</Button>
+                                                                    <Button href='Survey' type='link'>Take Survey</Button>
                                                                     </Panel>
                                                                     <Panel header="What are you looking for?" key="2">
                                                                     <p><text>Link to Survey</text></p>
-                                                                    <Button href={'/Survey?surveyid=1&token=' + String(this.state.token)} type='link'>Take Survey</Button>
+                                                                    <Button href='Survey' type='link'>Take Survey</Button>
                                                                     </Panel>
                                                                     <Panel header="Need to talk? We're here" key="3">
                                                                     <p><text>Link to Survey</text></p>
-                                                                    <Button href={'/Survey?surveyid=1&token=' + String(this.state.token)} type='link'>Take Survey</Button>
+                                                                    <Button href='Survey' type='link'>Take Survey</Button>
                                                                     </Panel>
                                                                     <Panel header="Ready for therapy? Let's match you!" key="4">
                                                                     <p><text>Link to Survey</text></p>
-                                                                    <Button href={'/Survey?surveyid=1&token=' + String(this.state.token)} type='link'>Take Survey</Button>
+                                                                    <Button href='Survey' type='link'>Take Survey</Button>
                                                                     </Panel>
                                                                 </Collapse>
                                                             </Card>
                                                         </Row>
-                                                        <Row>
-                                                            <Card hoverable style={{ width: '100%', float:'right'}}>
-                                                                <Row>
-                                                                    <Col span = {8}>
-                                                                        <Image width={'90%'} height={'90%'} src={provimg} fallback="data:image/png;base64,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"/>
-                                                                        <text className="SurveysTitle" style={{textAlign:"center"}}>{linkedprovider}</text>
-                                                                    </Col>
-                                                                    <Col span = {14} offset = {2}>
-                                                                    <Descriptions bordered size='small' layout="horizontal" column={1}>
-                                                                        <Descriptions.Item label="First_Name">{providerfname}</Descriptions.Item>
-                                                                        <Descriptions.Item label="Last_Name">{providerlname}</Descriptions.Item>
-                                                                        <Descriptions.Item label="Avg. Rating"><Rate disabled count={5} value={providerrating}/></Descriptions.Item>
-                                                                    </Descriptions>
-                                                                    <p></p>
-                                                                    <Collapse accordion>
-                                                                        <Panel header={Ratetext} key="1">
-                                                                            <p><text>Link to Survey</text></p>
-                                                                            <Button href={'/Survey?surveyid=1&token=' + String(this.state.token)} type='link'>{'Rate ' + providerfname + ' ' + providerlname}</Button>
-                                                                        </Panel>
-                                                                    </Collapse>
-                                                                    </Col>
-                                                                </Row>
-                                                            </Card>
-                                                        </Row>
+        
                                                         </Col>
                                                     </Row>
                                                 </div>
@@ -240,9 +232,16 @@ class UserDashboard extends React.Component
                         </Layout>
                     </Col>
                 </Row>
+                <Row>
+                    <Col span={24}>        
+                        <Footer className='footer'>
+                            <h1 style={{color:'white'}}>Copyright Startwell</h1>
+                        </Footer>
+                    </Col>
+                </Row>
+            </Layout>
             </Layout>
         )
     }
 }
-
-export default UserDashboard
+export default ProviderDashboard

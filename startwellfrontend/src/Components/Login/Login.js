@@ -63,6 +63,9 @@ class Login extends Component {
     {
       window.location = `/Provider?token=${data.token}`
     }
+   
+        //window.location = `/Matching?token=${data.token}`
+    
   }
   validate() {
     let emailError = '';
@@ -159,9 +162,9 @@ class Login extends Component {
                 About
               </a>
             </Menu.Item>
-            <Menu.Item key='Match' className='Topnav'>
-              <a href='/Match' style={{ color: 'white' }}>
-                Match
+            <Menu.Item key='Matching' className='Topnav'>
+              <a href='/Matching' style={{ color: 'white' }}>
+                Match 
               </a>
             </Menu.Item>
             <Menu.Item key='Home' className='Topnav'>
@@ -237,18 +240,18 @@ class Login extends Component {
 
               <a className='login-form-forgot'>
                 {' '}
-                <Link to='./ForgotPassword/'>Forgot password</Link>
+                <Link to='./ForgotPassword'>Forgot password</Link>
               </a>
             </Form.Item>
             {/* // {AuthButton}  */}
             {/* {this.state.wrongCredentials && <p>Wrong Credentials</p>}  */}
             <Form.Item>
             <div>
-              <Button type='primary' htmlType='submit' className='login-form-button' onClick={this.handleSubmit}>
+              <Button type='primary' htmlType='submit' className='ant-btn-primary2' onClick={this.handleSubmit}>
                 Log in
               </Button>
               </div>
-              <Link to='./SignUp/'>register now!</Link>
+              <Link to='./SignUp'>register now!</Link>
             </Form.Item>
           </Form>
         </Layout>

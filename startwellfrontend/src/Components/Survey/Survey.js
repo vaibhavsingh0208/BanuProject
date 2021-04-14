@@ -33,86 +33,64 @@ import './Survey.css';
 import logo from '../../Assets/logo.PNG';
 import { Link } from 'react-router-dom';
 import TextArea from 'antd/lib/input/TextArea';
+import axios from 'axios';
 const { Option } = Select;
 const { Header, Content, Footer, Sider } = Layout;
-var SurveyTitle = 'Survey Title';
-var optDesc =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco';
-var counter = 0;
-var maxQuestions = 4;
-var noQuestions = 6;
+var maxQuestions = 5;
+
 var previous = '< Previous';
 var next = 'Next >';
 
-const questions = [
-  {
-    QText: 'The textual content of the first question from the SQuestions table',
-    responseType: 'Text',
-    Options: []
-  },
-
-  {
-    QText: 'The textual content of the second question from the SQuestions table',
-    responseType: 'Radio',
-    Options: [
-      { optText: 'Option 1 - QOptions Table' },
-      { optText: 'Option 2 - QOptions Table' },
-      { optText: 'Option 3 - QOptions Table' },
-      { optText: 'Option 4 - QOptions Table' }
-    ]
-  },
-
-  {
-    QText: 'The textual content of the third question from the SQuestions table',
-    responseType: 'Check',
-    Options: [
-      { optText: 'Option 1 - QOptions Table' },
-      { optText: 'Option 2 - QOptions Table' },
-      { optText: 'Option 3 - QOptions Table' },
-      { optText: 'Option 4 - QOptions Table' },
-      { optText: 'Option 5 - QOptions Table' },
-      { optText: 'Option 6 - QOptions Table' }
-    ]
-  },
-
-  {
-    QText: 'The textual content of the fourth question from the SQuestions table',
-    responseType: 'Text',
-    Options: []
-  },
-
-  {
-    QText: 'The textual content of the fifth question from the SQuestions table',
-    responseType: 'Radio',
-    Options: [
-      { optText: 'Option 1 - QOptions Table' },
-      { optText: 'Option 2 - QOptions Table' },
-      { optText: 'Option 3 - QOptions Table' },
-      { optText: 'Option 4 - QOptions Table' }
-    ]
-  },
-
-  {
-    QText: 'The textual content of the sixth question from the SQuestions table',
-    responseType: 'Check',
-    Options: [
-      { optText: 'Option 1 - QOptions Table' },
-      { optText: 'Option 2 - QOptions Table' },
-      { optText: 'Option 3 - QOptions Table' },
-      { optText: 'Option 4 - QOptions Table' },
-      { optText: 'Option 5 - QOptions Table' },
-      { optText: 'Option 6 - QOptions Table' }
-    ]
-  }
-];
-
 class Survey extends React.Component {
+  
   constructor(props) {
     super(props);
     this.state = {
+      token:"",
+      surveyid: 0,
+      title: "",
+      desc: "",
       pageCounter: 0,
-      responses: []
+      questions: [],
+      responses: [],
+      totques: 0,
+      subDisabled: true,
     };
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  componentDidMount(){
+    axios.get("http://localhost:9000/surveyQandOpt", {
+      params:{
+        surveyId: "1"
+      } 
+    }).then(
+      res =>{
+        const q = res.data;
+        const noq = res.data.length;
+        this.setState({totques:noq});
+        this.setState({questions: q});
+      }
+    )
+
+    axios.get("http://localhost:9000/displaySurveyDetails", {
+      params:{
+        surveyId: "1"
+      } 
+    }).then(
+      res =>{
+        const q = res.data;
+        this.setState({title: q.surveyTitle});
+        this.setState({title: q.surveyTitle});
+        this.setState({desc: q.OptDesc});
+      }
+    )
+
+    const queryParams = new URLSearchParams(window.location.search);
+    var tok = queryParams.get('token');
+    var sid = queryParams.get('surveyid');
+    this.setState({token:tok});
+    this.setState({surveyid:sid})
   }
 
   handleChange = q => e => {
@@ -120,6 +98,35 @@ class Survey extends React.Component {
     newArr[q] = e.target.value;
     this.setState({ responses: newArr });
   };
+
+
+  handleSubmit = (e) => {
+    var resp = this.state.responses;
+    var x = [];
+    var i;
+    
+    for(i=0;i<this.state.questions.length;i++)
+    { 
+      console.log(i);
+      console.log(resp[i]);
+      console.log(this.state.questions[i].options);
+      console.log(this.state.questions[i].options[parseInt(resp[i])-1].OptionText);
+      console.log("-------");
+      var addition = {
+        QuesID: i+1,
+        optionId: String(resp[i]),
+        OptionText: String(this.state.questions[i].options[parseInt(resp[i])-1].OptionText),
+      }
+      x.push(addition)
+    }
+
+    axios.post("http://localhost:9000/saveUserResponse", {
+      token: this.state.token,
+      SurveyID: 1,      
+      UserResponse: x,
+    });
+    
+  }
 
   handleCheckChange = q => e => {
     var newArr = this.state.responses;
@@ -130,7 +137,7 @@ class Survey extends React.Component {
     if (ss.includes(e)) {
       ss.replace(e, '');
     } else {
-      ss = ss + e;
+      ss = e;
     }
     newArr[q] = ss;
     this.setState({ responses: newArr });
@@ -140,16 +147,21 @@ class Survey extends React.Component {
   //     console.log('radio checked', e.target.value);
   //     setValue(e.target.value);
   //   };
+
+  
+
+
   CardGen(q, n) {
-    if (n == 'Text') {
+
+    if (n == 'T') {
       return <TextArea value={this.state.responses[q]} onChange={this.handleChange(q)} rows={2}></TextArea>;
-    } else if (n == 'Radio') {
+    } else if (n == 'R'||n=='C') {
       var i;
       var s = [];
-      for (i = 0; i < questions[q].Options.length; i++) {
+      for (i = 0; i < this.state.questions[q].options.length; i++) {
         s.push(
-          <Radio value={i}>
-            <h2 className='OptTexts'>{questions[q].Options[i].optText}</h2>
+          <Radio value={i+1}>
+            <h2 className='OptTexts'>{this.state.questions[q].options[i].OptionText}</h2>
           </Radio>
         );
         s.push(<br></br>);
@@ -159,12 +171,14 @@ class Survey extends React.Component {
           {s}
         </Radio.Group>
       );
-    } else if (n == 'Check') {
+    } else if (n == 'C') {
       var i;
       var j;
       var s = [];
       var ans = [];
+      var ans2 = [];
       var checked = this.state.responses[q];
+      
       if (checked == null) {
         ans = [];
       } else {
@@ -173,16 +187,36 @@ class Survey extends React.Component {
         }
       }
 
-      for (i = 0; i < questions[q].Options.length; i++) {
+      if (checked == null) {
+        ans2 = [];
+      } 
+      else 
+      {
+        var xx = "";
+        for (j = 0; j < checked.length; j++) 
+        {
+          if(checked.charAt(j)==',')
+          {
+            ans2.push(String(xx));
+            xx = "";
+          }
+          else
+          {
+            xx = xx + checked.charAt(j);
+          }  
+        }
+      }
+
+      for (i = 0; i < this.state.questions[q].options.length; i++) {
         s.push(
           <Checkbox value={String(i + 1)}>
-            <h2 className='OptTexts'>{questions[q].Options[i].optText}</h2>
+            <h2 className='OptTexts'>{this.state.questions[q].options[i].OptionText}</h2>
           </Checkbox>
         );
         s.push(<br></br>);
       }
       return (
-        <Checkbox.Group value={ans} onChange={this.handleCheckChange(q)}>
+        <Checkbox.Group value={ans2} onChange={this.handleCheckChange2(q)}>
           {s}
         </Checkbox.Group>
       );
@@ -191,7 +225,7 @@ class Survey extends React.Component {
 
   pageGen(pageCounter, maxQuestions) {
     var done = pageCounter * maxQuestions;
-    var left = questions.length - done;
+    var left = this.state.questions.length - done;
     if (left >= maxQuestions) {
       left = maxQuestions;
     }
@@ -200,9 +234,9 @@ class Survey extends React.Component {
     for (i = 0; i < left; i++) {
       s.push(
         <Form.Item className='formcomponents' name={pageCounter * maxQuestions + i + 1}>
-          <h2 className='formlabels'>{questions[pageCounter * maxQuestions + i + 0].QText}</h2>
+          <h2 className='formlabels'>{this.state.questions[pageCounter * maxQuestions + i + 0].QText}</h2>
           <br></br>
-          {this.CardGen(pageCounter * maxQuestions + i, questions[pageCounter * maxQuestions + i].responseType)}
+          {this.CardGen(pageCounter * maxQuestions + i, this.state.questions[pageCounter * maxQuestions + i].RespType)}
         </Form.Item>
       );
     }
@@ -210,11 +244,15 @@ class Survey extends React.Component {
   }
 
   nextClick = () => {
-    var last = Math.floor(noQuestions / maxQuestions);
+    var last = Math.floor(this.state.totques / maxQuestions);
     if (this.state.pageCounter == last) {
       alert('You are on the last page');
     } else {
       this.setState({ pageCounter: this.state.pageCounter + 1 });
+    }
+    if(this.state.pageCounter+1 == last)
+    {
+      this.setState({subDisabled:false});
     }
   };
   prevClick = () => {
@@ -263,9 +301,9 @@ class Survey extends React.Component {
           <Row>
             <Col span={6}></Col>
             <Col span={12}>
-              <h1 className='BigMessage'>{SurveyTitle}</h1>
+              <h1 className='BigMessage'>{this.state.title}</h1>
               <Divider className='divide' />
-              <h2 className='Descrip'>{optDesc}</h2>
+              <h2 className='Descrip'>{this.state.desc}</h2>
             </Col>
             <Col span={6}></Col>
           </Row>
@@ -278,7 +316,7 @@ class Survey extends React.Component {
                 className='ProgBar'
                 strokeWidth='15px'
                 strokeColor={{ '0%': '#606060', '100%': '#000000' }}
-                percent={(this.state.pageCounter / Math.ceil(noQuestions / maxQuestions)) * 100}
+                percent={(this.state.pageCounter / Math.ceil(this.state.totques / maxQuestions)) * 100}
               ></Progress>
               <br></br>
               <br></br>
@@ -300,15 +338,21 @@ class Survey extends React.Component {
                                     <br></br>
                                     {CardGen(pageCounter*maxQuestions + 2,questions[pageCounter*maxQuestions + 2].responseType)}
                                 </Form.Item> */}
-                {this.pageGen(this.state.pageCounter, 4)}
+                {this.pageGen(this.state.pageCounter, maxQuestions)}
+                <Form.Item>
+                  <Button className='PrevNext' style={{ float: 'left' }} onClick={() => this.prevClick()}>
+                    {previous}
+                  </Button>
+                  <Button className='PrevNext' disabled={this.state.subDisabled} style={{ float: 'center' }} onClick={() => this.handleSubmit()}>
+                    Submit
+                  </Button>
+                  <Button className='PrevNext' disabled={!this.state.subDisabled} style={{ float: 'right' }} onClick={() => this.nextClick()}>
+                    {next}
+                  </Button>
+                </Form.Item>
               </Form>
               <br></br>
-              <Button className='PrevNext' style={{ float: 'left' }} onClick={() => this.prevClick()}>
-                {previous}
-              </Button>
-              <Button className='PrevNext' style={{ float: 'right' }} onClick={() => this.nextClick()}>
-                {next}
-              </Button>
+              
               <br></br>
               <br></br>
               <br></br>

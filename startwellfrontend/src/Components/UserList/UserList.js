@@ -112,7 +112,7 @@ export default class UserList extends PureComponent {
           </div>
         ) : (
           <div>
-            <div style={{ marginLeft: '40px', marginTop: '20px', marginRight: '1150px' }}>
+            <div style={{ marginLeft: '40px', marginTop: '20px', marginRight: '1150px', width: '500px' }}>
               <Search
                 placeholder='input search text'
                 allowClear

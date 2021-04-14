@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import Header from '../Header/Header';
 import { Layout, List, Menu } from 'antd';
-import UserServey from '../UserServey/UserServey';
 import { UserOutlined } from '@ant-design/icons';
 import UserList from '../UserList/UserList';
 import { Link } from 'react-router-dom';
 import ContactUsList from '../ContactUs/ContactUsList';
+import UserBucketInfo from '../UserBucketInfo/UserBucketInfo';
+import PageContent from '../PageContent/PageContent';
+import AddPageContent from '../PageContent/AddPageContent';
 
 const { SubMenu } = Menu;
 
@@ -14,7 +16,8 @@ export default class Admin extends Component {
     super();
     this.state = {
       adminTabSelected: 'none',
-      userTypeValue: 'all'
+      userTypeValue: 'all',
+      pageContentValue: ''
     };
   }
 
@@ -37,6 +40,14 @@ export default class Admin extends Component {
     this.setState({
       adminTabSelected: value,
       bucketTypeSelected: type
+    });
+  };
+
+  setNaviagtionForPageContent = (value, type) => {
+    localStorage.setItem('adminTabSelected', value);
+    this.setState({
+      adminTabSelected: value,
+      pageContentValue: type
     });
   };
 
@@ -140,11 +151,21 @@ export default class Admin extends Component {
                     </span>
                   }
                 >
-                  <Menu.Item key='1'>
-                    <Link to='ChangePersonalDetails'>Fetch User Details</Link>
+                  <Menu.Item
+                    key='1'
+                    onClick={() => {
+                      this.setNaviagtionForPageContent('Page Content', 'displayCrossReference');
+                    }}
+                  >
+                    Display Cross Reference
                   </Menu.Item>
-                  <Menu.Item key='2'>
-                    <Link to='Survey'>Change User Status</Link>
+                  <Menu.Item
+                    key='2'
+                    onClick={() => {
+                      this.setNaviagtionForPageContent('Page Content', 'addCrossReference');
+                    }}
+                  >
+                    Add Cross Reference
                   </Menu.Item>
                 </SubMenu>
               </Menu>
@@ -183,10 +204,12 @@ export default class Admin extends Component {
               </div>
             ) : this.state.adminTabSelected === 'Survey Data' ? (
               <div id='user'>
-                <UserServey />
+                <UserBucketInfo />
               </div>
             ) : this.state.adminTabSelected === 'Page Content' ? (
-              <div id='user'>Page Content</div>
+              <div id='user'>
+                {this.state.pageContentValue === 'displayCrossReference' ? <PageContent /> : <AddPageContent />}
+              </div>
             ) : this.state.adminTabSelected === 'New Request' ? (
               <div id='user'>
                 <ContactUsList />
