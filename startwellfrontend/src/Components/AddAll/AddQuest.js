@@ -3,7 +3,7 @@ import { Button, Input, Form, Select } from 'antd';
 import axios from 'axios';
 
 const { Option } = Select;
-export default class AddPageContent extends Component {
+export default class AddQuest extends Component {
   constructor() {
     super();
     this.state = {
@@ -41,13 +41,14 @@ export default class AddPageContent extends Component {
     };
 
     const onFinish = values => {
-      alert(values.QuesID_Customer);
+      // alert(values.QuesID_Customer);
       axios
-        .post('http://localhost:9000/addCrossReference', {
-          SurveyID_Customer: values.SurveyID_Customer,
-          QuesID_Customer: values.QuesID_Customer,
-          SurveyID_Provider: values.SurveyID_Provider,
-          QuesID_Provider: values.QuesID_Provider
+        .post('http://localhost:9000/addSurveyQuestion', {
+          SurveyID: values.SurveyID,
+          QuesID: values.QuesID,
+          QText: values.QText,
+          RespType: values.RespType,
+          Weights: values.Weights
         })
         .then(response => {
           if (response.status === 200) {
@@ -69,58 +70,69 @@ export default class AddPageContent extends Component {
     return (
       <div style={{ marginTop: '50px', width: '80%' }}>
         {submitSuccess ? (
-          <div>Cross Reference Added</div>
+          <div>Questions Added</div>
         ) : (
           <Form {...layout} name='basic' onFinish={onFinish}>
             <Form.Item
-              label='SurveyID_Customer'
-              name='SurveyID_Customer'
+              label='SurveyID'
+              name='SurveyID'
               rules={[
                 {
                   required: true,
-                  message: 'SurveyID_Customer is mandetory Filed'
+                  message: 'SurveyID is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              label='QuestionID_Customer'
-              name='QuesID_Customer'
+              label='QuesID'
+              name='QuesID'
               rules={[
                 {
                   required: true,
-                  message: 'Customer ID is mandetory Filed'
+                  message: 'Questions ID is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              label='Provider Survey ID'
-              name='SurveyID_Provider'
+              label='QText'
+              name='QText'
               rules={[
                 {
                   required: true,
-                  message: 'Provider Survey ID is mandetory Filed'
+                  message: 'QText is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              label='Provider Question ID'
-              name='QuesID_Provider'
+              label='RespType'
+              name='RespType'
               rules={[
                 {
                   required: true,
-                  message: 'Provider Question ID is mandetory Filed'
+                  message: 'RespType is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
-
+            <Form.Item
+              label='Weights'
+              name='Weights'
+              rules={[
+                {
+                  required: true,
+                  message: 'Weights is mandetory Filed'
+                }
+              ]}
+            >
+              <Input />
+            </Form.Item>
             <Form.Item {...tailLayout}>
               <Button type='primary' htmlType='submit'>
                 Submit

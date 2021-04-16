@@ -3,7 +3,7 @@ import { Button, Input, Form, Select } from 'antd';
 import axios from 'axios';
 
 const { Option } = Select;
-export default class AddPageContent extends Component {
+export default class AddBucket extends Component {
   constructor() {
     super();
     this.state = {
@@ -41,13 +41,11 @@ export default class AddPageContent extends Component {
     };
 
     const onFinish = values => {
-      alert(values.QuesID_Customer);
+      // alert(values.QuesID_Customer);
       axios
-        .post('http://localhost:9000/addCrossReference', {
-          SurveyID_Customer: values.SurveyID_Customer,
-          QuesID_Customer: values.QuesID_Customer,
-          SurveyID_Provider: values.SurveyID_Provider,
-          QuesID_Provider: values.QuesID_Provider
+        .post('http://localhost:9000/addBucket', {
+          BucketType: values.BucketType,
+          BucketDesc: values.BucketDesc
         })
         .then(response => {
           if (response.status === 200) {
@@ -69,58 +67,33 @@ export default class AddPageContent extends Component {
     return (
       <div style={{ marginTop: '50px', width: '80%' }}>
         {submitSuccess ? (
-          <div>Cross Reference Added</div>
+          <div>Bucket Added</div>
         ) : (
           <Form {...layout} name='basic' onFinish={onFinish}>
             <Form.Item
-              label='SurveyID_Customer'
-              name='SurveyID_Customer'
+              label='BucketType'
+              name='BucketType'
               rules={[
                 {
                   required: true,
-                  message: 'SurveyID_Customer is mandetory Filed'
+                  message: 'BucketType is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              label='QuestionID_Customer'
-              name='QuesID_Customer'
+              label='BucketDesc'
+              name='BucketDesc'
               rules={[
                 {
                   required: true,
-                  message: 'Customer ID is mandetory Filed'
+                  message: 'BucketDesc is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
-            <Form.Item
-              label='Provider Survey ID'
-              name='SurveyID_Provider'
-              rules={[
-                {
-                  required: true,
-                  message: 'Provider Survey ID is mandetory Filed'
-                }
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label='Provider Question ID'
-              name='QuesID_Provider'
-              rules={[
-                {
-                  required: true,
-                  message: 'Provider Question ID is mandetory Filed'
-                }
-              ]}
-            >
-              <Input />
-            </Form.Item>
-
             <Form.Item {...tailLayout}>
               <Button type='primary' htmlType='submit'>
                 Submit

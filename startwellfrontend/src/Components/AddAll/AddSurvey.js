@@ -3,7 +3,7 @@ import { Button, Input, Form, Select } from 'antd';
 import axios from 'axios';
 
 const { Option } = Select;
-export default class AddPageContent extends Component {
+export default class AddSurvey extends Component {
   constructor() {
     super();
     this.state = {
@@ -24,6 +24,30 @@ export default class AddPageContent extends Component {
     });
   };
 
+  getBucketData = () => {
+    if (!this.state.userBucketInfo.length) {
+      axios
+        .get('http://localhost:9000/displayUserbucket')
+        .then(response => {
+          if (response.status === 200) {
+            console.log(JSON.stringify(response.data));
+            this.setState({
+              userBucketInfo: response.data,
+              isUserBucketDataFetched: true
+            });
+            console.log('User Survey Bucket', response);
+          } else {
+            let surveyError = 'Error while processing user survey bucket';
+            this.setState({ surveyError });
+            console.log('User Survey bucket API failed', response);
+          }
+        })
+        .catch(error => {
+          console.log('error occured', error);
+        });
+    }
+  };
+
   render() {
     const layout = {
       labelCol: {
@@ -41,13 +65,14 @@ export default class AddPageContent extends Component {
     };
 
     const onFinish = values => {
-      alert(values.QuesID_Customer);
+      // alert(values.QuesID_Customer);
       axios
-        .post('http://localhost:9000/addCrossReference', {
-          SurveyID_Customer: values.SurveyID_Customer,
-          QuesID_Customer: values.QuesID_Customer,
-          SurveyID_Provider: values.SurveyID_Provider,
-          QuesID_Provider: values.QuesID_Provider
+        .post('http://localhost:9000/addSurvey', {
+          SurveyTitle: values.SurveyTitle,
+          NoQues: values.NoQues,
+          OptDesc: values.OptDesc,
+          CategoryID: values.CategoryID,
+          SurveyStatus: values.SurveyStatus
         })
         .then(response => {
           if (response.status === 200) {
@@ -69,58 +94,69 @@ export default class AddPageContent extends Component {
     return (
       <div style={{ marginTop: '50px', width: '80%' }}>
         {submitSuccess ? (
-          <div>Cross Reference Added</div>
+          <div>Survey Added</div>
         ) : (
           <Form {...layout} name='basic' onFinish={onFinish}>
             <Form.Item
-              label='SurveyID_Customer'
-              name='SurveyID_Customer'
+              label='SurveyTitle'
+              name='SurveyTitle'
               rules={[
                 {
                   required: true,
-                  message: 'SurveyID_Customer is mandetory Filed'
+                  message: 'SurveyTitle is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              label='QuestionID_Customer'
-              name='QuesID_Customer'
+              label='NoQues'
+              name='NoQues'
               rules={[
                 {
                   required: true,
-                  message: 'Customer ID is mandetory Filed'
+                  message: 'Number of Questions is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              label='Provider Survey ID'
-              name='SurveyID_Provider'
+              label='OptDesc'
+              name='OptDesc'
               rules={[
                 {
                   required: true,
-                  message: 'Provider Survey ID is mandetory Filed'
+                  message: 'Option Description is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              label='Provider Question ID'
-              name='QuesID_Provider'
+              label='CategoryID'
+              name='CategoryID'
               rules={[
                 {
                   required: true,
-                  message: 'Provider Question ID is mandetory Filed'
+                  message: 'CategoryID is mandetory Filed'
                 }
               ]}
             >
               <Input />
             </Form.Item>
-
+            <Form.Item
+              label='SurveyStatus'
+              name='SurveyStatus'
+              rules={[
+                {
+                  required: true,
+                  message: 'SurveyStatus is mandetory Filed'
+                }
+              ]}
+            >
+              <Input />
+            </Form.Item>
             <Form.Item {...tailLayout}>
               <Button type='primary' htmlType='submit'>
                 Submit

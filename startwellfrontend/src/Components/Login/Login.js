@@ -3,7 +3,7 @@ import './Login.css';
 import axios from 'axios';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import { SmileOutlined } from '@ant-design/icons';
-import { Form,  Input,  Button,  Checkbox,  Select,  Layout,  Menu, Row, Col } from 'antd';
+import { Form, Input, Button, Checkbox, Select, Layout, Menu, Row, Col } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import LoginSuccess from '../LoginSuccess/LoginSuccess.js';
 import ForgetPassword from '../ForgotPassword/ForgotPassword.js';
@@ -50,22 +50,19 @@ class Login extends Component {
   }
   handleSuccessfulAuth(data) {
     //this.props.handleLogin(data);
-    console.log("data in auth",data)
-    console.log("checking for usertype",data.UserType)
-    if(data.UserType === "Customer")
-    {
-      window.location = `/UserDashboard?token=${data.token}`}
-    if(data.UserType ==="Admin")
-    {
-      window.location = `/Admin?token=${data.token}`
+    console.log('data in auth', data);
+    console.log('checking for usertype', data.UserType);
+    if (data.UserType === 'Customer') {
+      window.location = `/UserDashboard?token=${data.token}`;
     }
-    if(data.UserType === "Provider")
-    {
-      window.location = `/Provider?token=${data.token}`
+    if (data.UserType === 'Admin') {
+      window.location = `/Admin?token=${data.token}`;
     }
-   
-        //window.location = `/Matching?token=${data.token}`
-    
+    if (data.UserType === 'Provider') {
+      window.location = `/ProviderDashboard?token=${data.token}`;
+    }
+
+    //window.location = `/Matching?token=${data.token}`
   }
   validate() {
     let emailError = '';
@@ -164,7 +161,7 @@ class Login extends Component {
             </Menu.Item>
             <Menu.Item key='Matching' className='Topnav'>
               <a href='/Matching' style={{ color: 'white' }}>
-                Match 
+                Match
               </a>
             </Menu.Item>
             <Menu.Item key='Home' className='Topnav'>
@@ -175,28 +172,25 @@ class Login extends Component {
           </Menu>
         </Header>
         <Layout className='sectionl'>
-
-        <bb1 >
-        <br></br>
-          <br></br>
-          <br></br>
-          <br></br>
-          <br></br>
-          <br></br>
-          <br></br>
-          <Row>
-            <Col span={2}></Col>
-            <Col span={9}>
-              <br></br>
-              <h1 className='BigMessage'>A Nice Welcome Message </h1>
-              <h1 className='BigMessage'> in this manner</h1>
-            </Col>
-          </Row>
-
+          <bb1>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <br></br>
+            <Row>
+              <Col span={2}></Col>
+              <Col span={9}>
+                <br></br>
+                <h1 className='BigMessage'>A Nice Welcome Message </h1>
+                <h1 className='BigMessage'> in this manner</h1>
+              </Col>
+            </Row>
           </bb1>
-          
-          
-          <Form  
+
+          <Form
             name='normal_login'
             className='login-form'
             initialValues={{
@@ -204,7 +198,7 @@ class Login extends Component {
             }}
             onSubmit={this.handleSubmit}
           >
-            <h1 style={{marginTop: '100px'}} > LOGIN </h1>
+            <h1 style={{ marginTop: '100px' }}> LOGIN </h1>
             <Form.Item
               label='Email-ID'
               name='Email-ID'
@@ -246,10 +240,10 @@ class Login extends Component {
             {/* // {AuthButton}  */}
             {/* {this.state.wrongCredentials && <p>Wrong Credentials</p>}  */}
             <Form.Item>
-            <div>
-              <Button type='primary' htmlType='submit' className='ant-btn-primary2' onClick={this.handleSubmit}>
-                Log in
-              </Button>
+              <div>
+                <Button type='primary' htmlType='submit' className='ant-btn-primary2' onClick={this.handleSubmit}>
+                  Log in
+                </Button>
               </div>
               <Link to='./SignUp'>register now!</Link>
             </Form.Item>
